@@ -29,7 +29,32 @@ const Pricing = () => {
     return Math.round(basePrice);
   };
 
-  const currentPrice = calculatePrice(visualizationCount, billingPeriod);
+  // Calculate plan pricing based on slider
+  const getPlanPricing = () => {
+    const monthlyPrice = calculatePrice(visualizationCount, 'monthly');
+    const annualPrice = calculatePrice(visualizationCount, 'annual');
+    const currentPrice = billingPeriod === 'annual' ? annualPrice : monthlyPrice;
+    
+    // Calculate tier-based pricing for plans
+    let starterPrice = 0;
+    let proPrice = 0;
+    let advancedPrice = 0;
+    
+    if (visualizationCount <= 50) {
+      // Only show Pro and Advanced for 50+ photos
+      starterPrice = null; // Hide starter
+      proPrice = Math.round(currentPrice * 0.8);
+      advancedPrice = Math.round(currentPrice * 1.2);
+    } else {
+      starterPrice = Math.round(currentPrice * 0.6);
+      proPrice = currentPrice;
+      advancedPrice = Math.round(currentPrice * 1.4);
+    }
+    
+    return { starterPrice, proPrice, advancedPrice, currentPrice };
+  };
+
+  const { starterPrice, proPrice, advancedPrice, currentPrice } = getPlanPricing();
   const annualSavings = Math.round((calculatePrice(visualizationCount, 'monthly') - calculatePrice(visualizationCount, 'annual')) * 12);
 
   const content = {
@@ -47,11 +72,9 @@ const Pricing = () => {
       plans: [
         {
           name: "Starter",
-          price: "49",
-          period: "per visualization",
           description: "Perfect for small businesses testing our service",
           features: [
-            "1 product visualization",
+            "Basic product visualization",
             "3 space options",
             "4K resolution",
             "24-hour automated delivery",
@@ -61,12 +84,10 @@ const Pricing = () => {
           buttonText: "Get Started"
         },
         {
-          name: "Professional",
-          price: "199",
-          period: "per 5 visualizations",
-          description: "Best value for growing businesses",
+          name: "Pro",
+          description: "Perfect for businesses of all sizes",
           features: [
-            "5 product visualizations",
+            "Advanced visualizations",
             "10 space options",
             "4K resolution",
             "12-hour automated delivery",
@@ -77,13 +98,11 @@ const Pricing = () => {
           buttonText: "Most Popular"
         },
         {
-          name: "Enterprise",
-          price: "Custom",
-          period: "contact us",
-          description: "For large businesses with high volume needs",
+          name: "Advanced",
+          description: "Best for scaling your business with extra AI features",
           features: [
-            "Unlimited visualizations",
-            "Custom space creation",
+            "Premium visualizations",
+            "Unlimited space options",
             "8K resolution",
             "6-hour automated delivery",
             "Dedicated account manager",
@@ -91,13 +110,14 @@ const Pricing = () => {
             "White-label solution"
           ],
           popular: false,
-          buttonText: "Contact Sales"
+          buttonText: "Get Started"
         }
       ],
       guarantee: "30-day money-back guarantee",
       contact: "Need a custom solution? Contact us for enterprise pricing.",
       scheduleMeeting: "Schedule a Meeting",
-      meetingDescription: "Book a consultation to discuss your visualization needs"
+      meetingDescription: "Book a consultation to discuss your visualization needs",
+      credits: "Credits"
     },
     tr: {
       title: "Fiyatlandırma Planları",
@@ -113,11 +133,9 @@ const Pricing = () => {
       plans: [
         {
           name: "Başlangıç",
-          price: "49",
-          period: "görselleştirme başına",
           description: "Hizmetimizi test eden küçük işletmeler için mükemmel",
           features: [
-            "1 ürün görselleştirmesi",
+            "Temel ürün görselleştirmesi",
             "3 mekan seçeneği",
             "4K çözünürlük",
             "24 saatte otomatik teslimat",
@@ -127,12 +145,10 @@ const Pricing = () => {
           buttonText: "Başlayın"
         },
         {
-          name: "Profesyonel",
-          price: "199",
-          period: "5 görselleştirme için",
-          description: "Büyüyen işletmeler için en iyi değer",
+          name: "Pro",
+          description: "Her büyüklükteki işletme için mükemmel",
           features: [
-            "5 ürün görselleştirmesi",
+            "Gelişmiş görselleştirmeler",
             "10 mekan seçeneği",
             "4K çözünürlük",
             "12 saatte otomatik teslimat",
@@ -143,13 +159,11 @@ const Pricing = () => {
           buttonText: "En Popüler"
         },
         {
-          name: "Kurumsal",
-          price: "Özel",
-          period: "bize ulaşın",
-          description: "Yüksek hacimli ihtiyaçları olan büyük işletmeler için",
+          name: "Gelişmiş",
+          description: "Ekstra AI özellikleriyle işinizi büyütmek için en iyi",
           features: [
-            "Sınırsız görselleştirme",
-            "Özel mekan oluşturma",
+            "Premium görselleştirmeler",
+            "Sınırsız mekan seçeneği",
             "8K çözünürlük",
             "6 saatte otomatik teslimat",
             "Özel hesap yöneticisi",
@@ -157,17 +171,25 @@ const Pricing = () => {
             "Beyaz etiket çözümü"
           ],
           popular: false,
-          buttonText: "Satış Ekibiyle İletişim"
+          buttonText: "Başlayın"
         }
       ],
       guarantee: "30 gün para iade garantisi",
       contact: "Özel bir çözüme mi ihtiyacınız var? Kurumsal fiyatlandırma için bize ulaşın.",
       scheduleMeeting: "Toplantı Oluştur",
-      meetingDescription: "Görselleştirme ihtiyaçlarınızı görüşmek için randevu alın"
+      meetingDescription: "Görselleştirme ihtiyaçlarınızı görüşmek için randevu alın",
+      credits: "Kredi"
     }
   };
 
   const t = content[language];
+
+  // Handle slider change with step of 10
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    const roundedValue = Math.round(value / 10) * 10;
+    setVisualizationCount(Math.max(20, roundedValue));
+  };
 
   return (
     <section id="pricing" className="py-24 bg-stone-50">
@@ -189,8 +211,9 @@ const Pricing = () => {
                 type="range"
                 min="20"
                 max="500"
+                step="10"
                 value={visualizationCount}
-                onChange={(e) => setVisualizationCount(parseInt(e.target.value))}
+                onChange={handleSliderChange}
                 className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
                   background: `linear-gradient(to right, #1e293b 0%, #1e293b ${((visualizationCount - 20) / (500 - 20)) * 100}%, #e7e5e4 ${((visualizationCount - 20) / (500 - 20)) * 100}%, #e7e5e4 100%)`
@@ -241,102 +264,98 @@ const Pricing = () => {
               )}
             </div>
           </div>
+        </div>
 
-          {/* Dynamic Pricing Card */}
-          <div className="max-w-md mx-auto bg-white border border-stone-200 rounded-3xl p-8 shadow-sm">
-            <div className="space-y-4">
-              <div className="text-center">
-                <div className="text-4xl font-light text-slate-800">
-                  ${currentPrice}
-                </div>
-                <div className="text-slate-600 font-light">{t.usdMonth}</div>
-                <div className="text-sm text-slate-500 font-light mt-2">
-                  {t.billedMonthly}
-                </div>
-                {billingPeriod === 'annual' && annualSavings > 0 && (
-                  <div className="text-sm text-green-600 font-medium mt-1">
-                    Save ${annualSavings}/year
+        {/* Dynamic Pricing Plans */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {t.plans.map((plan, index) => {
+            // Skip starter plan if visualization count > 50
+            if (index === 0 && visualizationCount > 50) {
+              return null;
+            }
+            
+            let planPrice = 0;
+            let planCredits = visualizationCount;
+            
+            if (index === 0) { // Starter
+              planPrice = starterPrice;
+              planCredits = Math.round(visualizationCount * 0.6);
+            } else if (index === 1) { // Pro
+              planPrice = proPrice;
+              planCredits = visualizationCount;
+            } else { // Advanced
+              planPrice = advancedPrice;
+              planCredits = Math.round(visualizationCount * 1.4);
+            }
+
+            return (
+              <div 
+                key={index}
+                className={`relative bg-white border rounded-3xl p-8 shadow-sm transition-all duration-300 hover:shadow-md flex flex-col ${
+                  plan.popular 
+                    ? 'border-slate-800 ring-2 ring-slate-800 ring-opacity-20' 
+                    : 'border-stone-200 hover:border-stone-300'
+                }`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
+                      <Star className="h-4 w-4 fill-current" />
+                      <span>{plan.buttonText}</span>
+                    </div>
                   </div>
                 )}
-              </div>
-              
-              <button className="w-full py-3 px-6 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition-all duration-300 font-medium">
-                {t.getStarted}
-              </button>
-            </div>
-          </div>
-        </div>
 
-        {/* Original Pricing Plans */}
-        <div className="text-center space-y-4 mb-20">
-          <h3 className="text-3xl font-light text-slate-800">
-            {t.title}
-          </h3>
-          <p className="text-lg text-slate-600 max-w-3xl mx-auto font-light">
-            {t.subtitle}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {t.plans.map((plan, index) => (
-            <div 
-              key={index}
-              className={`relative bg-white border rounded-3xl p-8 shadow-sm transition-all duration-300 hover:shadow-md flex flex-col ${
-                plan.popular 
-                  ? 'border-slate-800 ring-2 ring-slate-800 ring-opacity-20' 
-                  : 'border-stone-200 hover:border-stone-300'
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
-                    <Star className="h-4 w-4 fill-current" />
-                    <span>{plan.buttonText}</span>
+                <div className="space-y-6 flex-grow">
+                  {/* Plan Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-medium text-slate-800">{plan.name}</h3>
+                      <p className="text-slate-600 font-light text-sm">{plan.description}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-medium text-slate-800">{planCredits} {t.credits}</div>
+                    </div>
                   </div>
-                </div>
-              )}
 
-              <div className="space-y-6 flex-grow">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-medium text-slate-800">{plan.name}</h3>
-                  <p className="text-slate-600 font-light">{plan.description}</p>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-baseline space-x-2">
-                    <span className="text-4xl font-light text-slate-800">
-                      {plan.price === 'Custom' || plan.price === 'Özel' ? plan.price : `$${plan.price}`}
-                    </span>
-                    {plan.price !== 'Custom' && plan.price !== 'Özel' && (
+                  {/* Price */}
+                  <div className="space-y-1">
+                    <div className="flex items-baseline space-x-2">
+                      <span className="text-4xl font-light text-slate-800">
+                        ${planPrice}
+                      </span>
                       <span className="text-slate-600 font-light">USD</span>
-                    )}
+                    </div>
+                    <p className="text-slate-600 text-sm font-light">{t.usdMonth}</p>
+                    <p className="text-slate-500 text-xs font-light">{t.billedMonthly}</p>
                   </div>
-                  <p className="text-slate-600 text-sm font-light">{plan.period}</p>
+
+                  {/* Features */}
+                  <ul className="space-y-3 flex-grow">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start space-x-3">
+                        <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-slate-600 font-light text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <ul className="space-y-3 flex-grow">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start space-x-3">
-                      <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-600 font-light">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                {/* Button */}
+                <div className="mt-6">
+                  <button 
+                    className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 ${
+                      plan.popular
+                        ? 'bg-slate-800 text-white hover:bg-slate-700'
+                        : 'border border-stone-300 text-slate-700 hover:border-stone-400 hover:text-slate-800 bg-white'
+                    }`}
+                  >
+                    {t.getStarted}
+                  </button>
+                </div>
               </div>
-
-              <div className="mt-6">
-                <button 
-                  className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 ${
-                    plan.popular
-                      ? 'bg-slate-800 text-white hover:bg-slate-700'
-                      : 'border border-stone-300 text-slate-700 hover:border-stone-400 hover:text-slate-800 bg-white'
-                  }`}
-                >
-                  {plan.popular ? plan.buttonText : plan.buttonText}
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Meeting Scheduler Section */}
