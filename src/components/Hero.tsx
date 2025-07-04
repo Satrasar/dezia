@@ -37,7 +37,7 @@ const Hero = () => {
   const t = content[language];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-50 via-orange-25 to-pink-50">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-50 via-orange-25 to-pink-50 pt-24">
       {/* Beautiful Morphic Background with Purple-Orange Depth */}
       <div className="absolute inset-0">
         {/* Base gradient with depth */}

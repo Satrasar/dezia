@@ -36,20 +36,9 @@ const Pricing = () => {
     const currentPrice = billingPeriod === 'annual' ? annualPrice : monthlyPrice;
     
     // Calculate tier-based pricing for plans
-    let starterPrice = 0;
-    let proPrice = 0;
-    let advancedPrice = 0;
-    
-    if (visualizationCount <= 50) {
-      // Only show Pro and Advanced for 50+ photos
-      starterPrice = null; // Hide starter
-      proPrice = Math.round(currentPrice * 0.8);
-      advancedPrice = Math.round(currentPrice * 1.2);
-    } else {
-      starterPrice = Math.round(currentPrice * 0.6);
-      proPrice = currentPrice;
-      advancedPrice = Math.round(currentPrice * 1.4);
-    }
+    const starterPrice = Math.round(currentPrice * 0.6);
+    const proPrice = currentPrice;
+    const advancedPrice = Math.round(currentPrice * 1.4);
     
     return { starterPrice, proPrice, advancedPrice, currentPrice };
   };
@@ -269,17 +258,14 @@ const Pricing = () => {
         {/* Dynamic Pricing Plans */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {t.plans.map((plan, index) => {
-            // Skip starter plan if visualization count > 50
-            if (index === 0 && visualizationCount > 50) {
-              return null;
-            }
-            
             let planPrice = 0;
             let planCredits = visualizationCount;
+            let isDisabled = false;
             
             if (index === 0) { // Starter
               planPrice = starterPrice;
               planCredits = Math.round(visualizationCount * 0.6);
+              isDisabled = visualizationCount < 50; // Disable if less than 50
             } else if (index === 1) { // Pro
               planPrice = proPrice;
               planCredits = visualizationCount;
@@ -291,13 +277,15 @@ const Pricing = () => {
             return (
               <div 
                 key={index}
-                className={`relative bg-white border rounded-3xl p-8 shadow-sm transition-all duration-300 hover:shadow-md flex flex-col ${
-                  plan.popular 
-                    ? 'border-slate-800 ring-2 ring-slate-800 ring-opacity-20' 
-                    : 'border-stone-200 hover:border-stone-300'
+                className={`relative bg-white border rounded-3xl p-8 shadow-sm transition-all duration-300 flex flex-col ${
+                  isDisabled 
+                    ? 'opacity-50 cursor-not-allowed border-stone-200' 
+                    : plan.popular 
+                      ? 'border-slate-800 ring-2 ring-slate-800 ring-opacity-20 hover:shadow-md' 
+                      : 'border-stone-200 hover:border-stone-300 hover:shadow-md'
                 }`}
               >
-                {plan.popular && (
+                {plan.popular && !isDisabled && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <div className="bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
                       <Star className="h-4 w-4 fill-current" />
@@ -310,32 +298,48 @@ const Pricing = () => {
                   {/* Plan Header */}
                   <div className="flex items-center justify-between">
                     <div className="space-y-2">
-                      <h3 className="text-2xl font-medium text-slate-800">{plan.name}</h3>
-                      <p className="text-slate-600 font-light text-sm">{plan.description}</p>
+                      <h3 className={`text-2xl font-medium ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
+                        {plan.name}
+                      </h3>
+                      <p className={`font-light text-sm ${isDisabled ? 'text-slate-400' : 'text-slate-600'}`}>
+                        {plan.description}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-medium text-slate-800">{planCredits} {t.credits}</div>
+                      <div className={`text-lg font-medium ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
+                        {planCredits} {t.credits}
+                      </div>
                     </div>
                   </div>
 
                   {/* Price */}
                   <div className="space-y-1">
                     <div className="flex items-baseline space-x-2">
-                      <span className="text-4xl font-light text-slate-800">
+                      <span className={`text-4xl font-light ${isDisabled ? 'text-slate-400' : 'text-slate-800'}`}>
                         ${planPrice}
                       </span>
-                      <span className="text-slate-600 font-light">USD</span>
+                      <span className={`font-light ${isDisabled ? 'text-slate-400' : 'text-slate-600'}`}>USD</span>
                     </div>
-                    <p className="text-slate-600 text-sm font-light">{t.usdMonth}</p>
-                    <p className="text-slate-500 text-xs font-light">{t.billedMonthly}</p>
+                    <p className={`text-sm font-light ${isDisabled ? 'text-slate-400' : 'text-slate-600'}`}>
+                      {t.usdMonth}
+                    </p>
+                    <p className={`text-xs font-light ${isDisabled ? 'text-slate-400' : 'text-slate-500'}`}>
+                      {t.billedMonthly}
+                    </p>
                   </div>
 
                   {/* Features */}
                   <ul className="space-y-3 flex-grow">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start space-x-3">
-                        <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-slate-600 font-light text-sm">{feature}</span>
+                        <Check className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
+                          isDisabled ? 'text-slate-300' : 'text-green-500'
+                        }`} />
+                        <span className={`font-light text-sm ${
+                          isDisabled ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -344,10 +348,13 @@ const Pricing = () => {
                 {/* Button */}
                 <div className="mt-6">
                   <button 
+                    disabled={isDisabled}
                     className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 ${
-                      plan.popular
-                        ? 'bg-slate-800 text-white hover:bg-slate-700'
-                        : 'border border-stone-300 text-slate-700 hover:border-stone-400 hover:text-slate-800 bg-white'
+                      isDisabled
+                        ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                        : plan.popular
+                          ? 'bg-slate-800 text-white hover:bg-slate-700'
+                          : 'border border-stone-300 text-slate-700 hover:border-stone-400 hover:text-slate-800 bg-white'
                     }`}
                   >
                     {t.getStarted}
