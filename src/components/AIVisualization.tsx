@@ -4,7 +4,7 @@ import { useLanguage } from './Header';
 
 const AIVisualization = () => {
   const { language } = useLanguage();
-  const [step, setStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(1);
 
   const content = {
     en: {
@@ -111,17 +111,15 @@ const AIVisualization = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {t.steps.map((stepItem, index) => {
             const Icon = stepItem.icon;
-            const isActive = step >= stepItem.id;
+            const isActive = activeStep === stepItem.id;
             
             return (
               <div 
                 key={stepItem.id}
-                className={`group cursor-pointer transition-all duration-300 ${
-                  isActive ? '' : ''
-                }`}
-                onClick={() => setStep(stepItem.id)}
+                className={`group cursor-pointer transition-all duration-300`}
+                onClick={() => setActiveStep(stepItem.id)}
               >
-                <div className={`bg-stone-50 border rounded-2xl p-8 text-center space-y-4 transition-all duration-300 shadow-sm ${
+                <div className={`bg-stone-50 border rounded-2xl p-8 text-center space-y-4 transition-all duration-300 shadow-sm h-full ${
                   isActive 
                     ? 'border-stone-300 bg-stone-100' 
                     : 'border-stone-200 hover:border-stone-300'

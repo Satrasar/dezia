@@ -143,8 +143,16 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-stone-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="relative z-40 bg-gradient-to-br from-purple-50 via-orange-25 to-pink-50 border-b border-stone-200/50">
+      {/* Background matching hero */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-orange-50 to-pink-100"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/30 via-transparent to-orange-200/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-bl from-orange-300/20 via-transparent to-purple-300/25"></div>
+        <div className="absolute inset-0 bg-gradient-to-tl from-pink-200/15 via-transparent to-violet-200/20"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-24">
           <div className="flex items-center">
             <img 

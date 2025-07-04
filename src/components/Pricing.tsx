@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Star } from 'lucide-react';
+import { Check, Star, Calendar } from 'lucide-react';
 import { useLanguage } from './Header';
 
 const Pricing = () => {
@@ -60,7 +60,9 @@ const Pricing = () => {
         }
       ],
       guarantee: "30-day money-back guarantee",
-      contact: "Need a custom solution? Contact us for enterprise pricing."
+      contact: "Need a custom solution? Contact us for enterprise pricing.",
+      scheduleMeeting: "Schedule a Meeting",
+      meetingDescription: "Book a consultation to discuss your visualization needs"
     },
     tr: {
       title: "Fiyatlandırma Planları",
@@ -116,7 +118,9 @@ const Pricing = () => {
         }
       ],
       guarantee: "30 gün para iade garantisi",
-      contact: "Özel bir çözüme mi ihtiyacınız var? Kurumsal fiyatlandırma için bize ulaşın."
+      contact: "Özel bir çözüme mi ihtiyacınız var? Kurumsal fiyatlandırma için bize ulaşın.",
+      scheduleMeeting: "Toplantı Oluştur",
+      meetingDescription: "Görselleştirme ihtiyaçlarınızı görüşmek için randevu alın"
     }
   };
 
@@ -138,7 +142,7 @@ const Pricing = () => {
           {t.plans.map((plan, index) => (
             <div 
               key={index}
-              className={`relative bg-white border rounded-3xl p-8 shadow-sm transition-all duration-300 hover:shadow-md ${
+              className={`relative bg-white border rounded-3xl p-8 shadow-sm transition-all duration-300 hover:shadow-md flex flex-col ${
                 plan.popular 
                   ? 'border-slate-800 ring-2 ring-slate-800 ring-opacity-20' 
                   : 'border-stone-200 hover:border-stone-300'
@@ -153,7 +157,7 @@ const Pricing = () => {
                 </div>
               )}
 
-              <div className="space-y-6">
+              <div className="space-y-6 flex-grow">
                 <div className="space-y-2">
                   <h3 className="text-2xl font-medium text-slate-800">{plan.name}</h3>
                   <p className="text-slate-600 font-light">{plan.description}</p>
@@ -171,7 +175,7 @@ const Pricing = () => {
                   <p className="text-slate-600 text-sm font-light">{plan.period}</p>
                 </div>
 
-                <ul className="space-y-3">
+                <ul className="space-y-3 flex-grow">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-start space-x-3">
                       <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
@@ -179,7 +183,9 @@ const Pricing = () => {
                     </li>
                   ))}
                 </ul>
+              </div>
 
+              <div className="mt-6">
                 <button 
                   className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 ${
                     plan.popular
@@ -192,6 +198,22 @@ const Pricing = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Meeting Scheduler Section */}
+        <div className="bg-white border border-stone-200 rounded-3xl p-8 mb-12 shadow-sm">
+          <div className="text-center space-y-6">
+            <div className="w-16 h-16 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto">
+              <Calendar className="h-8 w-8 text-slate-600" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-light text-slate-800">{t.scheduleMeeting}</h3>
+              <p className="text-slate-600 font-light max-w-md mx-auto">{t.meetingDescription}</p>
+            </div>
+            <button className="px-8 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition-all duration-300 font-medium">
+              {t.scheduleMeeting}
+            </button>
+          </div>
         </div>
 
         <div className="text-center space-y-4">
