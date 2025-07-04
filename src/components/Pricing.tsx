@@ -1,14 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Check, Star, Calendar } from 'lucide-react';
 import { useLanguage } from './Header';
 
 const Pricing = () => {
   const { language } = useLanguage();
+  const [visualizationCount, setVisualizationCount] = useState(50);
+  const [billingPeriod, setBillingPeriod] = useState('monthly'); // 'monthly' or 'annual'
+
+  // Calculate pricing based on visualization count
+  const calculatePrice = (count: number, period: string) => {
+    let basePrice = 0;
+    
+    if (count <= 20) {
+      basePrice = count * 2.5; // $2.5 per visualization
+    } else if (count <= 100) {
+      basePrice = 50 + (count - 20) * 2; // $50 + $2 per additional
+    } else if (count <= 300) {
+      basePrice = 210 + (count - 100) * 1.5; // $210 + $1.5 per additional
+    } else {
+      basePrice = 510 + (count - 300) * 1; // $510 + $1 per additional
+    }
+    
+    // Apply annual discount
+    if (period === 'annual') {
+      basePrice = basePrice * 0.83; // 17% discount
+    }
+    
+    return Math.round(basePrice);
+  };
+
+  const currentPrice = calculatePrice(visualizationCount, billingPeriod);
+  const annualSavings = Math.round((calculatePrice(visualizationCount, 'monthly') - calculatePrice(visualizationCount, 'annual')) * 12);
 
   const content = {
     en: {
       title: "Pricing Plans",
       subtitle: "Choose the plan that best fits your business needs. All plans include our automated AI processing.",
+      dynamicTitle: "Scale to the next level",
+      needText: `I need ${visualizationCount} photos per month`,
+      monthly: "Monthly",
+      annual: "Annual",
+      save: "Save 17%",
+      usdMonth: "USD/month",
+      billedMonthly: "Billed monthly. Unlimited credit rollover",
+      getStarted: "Get Started",
       plans: [
         {
           name: "Starter",
@@ -67,6 +102,14 @@ const Pricing = () => {
     tr: {
       title: "Fiyatlandırma Planları",
       subtitle: "İşletmenizin ihtiyaçlarına en uygun planı seçin. Tüm planlar otomatik AI işleme içerir.",
+      dynamicTitle: "Bir sonraki seviyeye çıkın",
+      needText: `Ayda ${visualizationCount} fotoğrafa ihtiyacım var`,
+      monthly: "Aylık",
+      annual: "Yıllık",
+      save: "%17 Tasarruf",
+      usdMonth: "USD/ay",
+      billedMonthly: "Aylık faturalandırma. Sınırsız kredi devri",
+      getStarted: "Başlayın",
       plans: [
         {
           name: "Başlangıç",
@@ -129,11 +172,107 @@ const Pricing = () => {
   return (
     <section id="pricing" className="py-24 bg-stone-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-4 mb-20">
+        {/* Dynamic Pricing Section */}
+        <div className="text-center space-y-8 mb-20">
           <h2 className="text-4xl md:text-5xl font-light text-slate-800">
-            {t.title}
+            {t.dynamicTitle}
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto font-light">
+          
+          <p className="text-xl text-slate-600 font-light">
+            {t.needText}
+          </p>
+
+          {/* Slider */}
+          <div className="max-w-2xl mx-auto space-y-6">
+            <div className="relative">
+              <input
+                type="range"
+                min="20"
+                max="500"
+                value={visualizationCount}
+                onChange={(e) => setVisualizationCount(parseInt(e.target.value))}
+                className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #1e293b 0%, #1e293b ${((visualizationCount - 20) / (500 - 20)) * 100}%, #e7e5e4 ${((visualizationCount - 20) / (500 - 20)) * 100}%, #e7e5e4 100%)`
+                }}
+              />
+              <div className="flex justify-between text-sm text-slate-600 mt-2">
+                <span>20</span>
+                <span>500+</span>
+              </div>
+              
+              {/* Current value indicator */}
+              <div 
+                className="absolute -top-12 transform -translate-x-1/2 bg-white border border-stone-300 rounded-lg px-3 py-1 text-sm font-medium text-slate-800 shadow-sm"
+                style={{ left: `${((visualizationCount - 20) / (500 - 20)) * 100}%` }}
+              >
+                {visualizationCount}
+              </div>
+            </div>
+
+            {/* Billing Period Toggle */}
+            <div className="flex items-center justify-center space-x-4">
+              <div className="flex bg-stone-200 rounded-full p-1">
+                <button
+                  onClick={() => setBillingPeriod('monthly')}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    billingPeriod === 'monthly'
+                      ? 'bg-slate-800 text-white'
+                      : 'text-slate-600 hover:text-slate-800'
+                  }`}
+                >
+                  {t.monthly}
+                </button>
+                <button
+                  onClick={() => setBillingPeriod('annual')}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    billingPeriod === 'annual'
+                      ? 'bg-slate-800 text-white'
+                      : 'text-slate-600 hover:text-slate-800'
+                  }`}
+                >
+                  {t.annual}
+                </button>
+              </div>
+              {billingPeriod === 'annual' && (
+                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {t.save}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Dynamic Pricing Card */}
+          <div className="max-w-md mx-auto bg-white border border-stone-200 rounded-3xl p-8 shadow-sm">
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="text-4xl font-light text-slate-800">
+                  ${currentPrice}
+                </div>
+                <div className="text-slate-600 font-light">{t.usdMonth}</div>
+                <div className="text-sm text-slate-500 font-light mt-2">
+                  {t.billedMonthly}
+                </div>
+                {billingPeriod === 'annual' && annualSavings > 0 && (
+                  <div className="text-sm text-green-600 font-medium mt-1">
+                    Save ${annualSavings}/year
+                  </div>
+                )}
+              </div>
+              
+              <button className="w-full py-3 px-6 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition-all duration-300 font-medium">
+                {t.getStarted}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Original Pricing Plans */}
+        <div className="text-center space-y-4 mb-20">
+          <h3 className="text-3xl font-light text-slate-800">
+            {t.title}
+          </h3>
+          <p className="text-lg text-slate-600 max-w-3xl mx-auto font-light">
             {t.subtitle}
           </p>
         </div>
@@ -226,6 +365,28 @@ const Pricing = () => {
           </p>
         </div>
       </div>
+
+      <style jsx>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #1e293b;
+          cursor: pointer;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .slider::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #1e293b;
+          cursor: pointer;
+          border: none;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+      `}</style>
     </section>
   );
 };

@@ -143,13 +143,31 @@ const Header = () => {
   };
 
   return (
-    <header className="relative z-40 bg-gradient-to-br from-purple-50 via-orange-25 to-pink-50 border-b border-stone-200/50">
-      {/* Background matching hero */}
+    <header className="relative z-40">
+      {/* Background matching hero - exactly the same */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-orange-50 to-pink-100"></div>
         <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/30 via-transparent to-orange-200/20"></div>
         <div className="absolute inset-0 bg-gradient-to-bl from-orange-300/20 via-transparent to-purple-300/25"></div>
         <div className="absolute inset-0 bg-gradient-to-tl from-pink-200/15 via-transparent to-violet-200/20"></div>
+        
+        {/* Grain Texture Overlay for depth */}
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          backgroundSize: '200px 200px'
+        }}></div>
+        
+        {/* Large Morphic Shapes with Purple-Orange Gradient for depth */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-purple-300/25 via-orange-300/20 to-pink-300/15 animate-morph-1 blur-3xl"></div>
+        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-br from-orange-300/20 via-purple-300/15 to-violet-300/20 animate-morph-2 blur-3xl"></div>
+        <div className="absolute bottom-1/3 left-1/5 w-72 h-72 bg-gradient-to-br from-violet-300/15 via-orange-200/15 to-purple-300/15 animate-morph-3 blur-3xl"></div>
+        
+        {/* Additional depth layers */}
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-br from-pink-300/20 via-orange-200/10 to-purple-200/15 animate-morph-1 blur-2xl"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-56 h-56 bg-gradient-to-br from-orange-300/15 via-violet-200/10 to-pink-200/10 animate-morph-2 blur-2xl"></div>
+        
+        {/* Final depth overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/10 via-transparent to-white/5"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
