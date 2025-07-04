@@ -143,10 +143,13 @@ const Header = () => {
   };
 
   return (
-    <header className="relative z-40">
-      {/* Background matching hero - exactly the same */}
+    <header className="absolute top-0 left-0 right-0 z-40">
+      {/* Background matching hero - exactly the same layers */}
       <div className="absolute inset-0">
+        {/* Base gradient with depth */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-orange-50 to-pink-100"></div>
+        
+        {/* Deep layered gradients for depth */}
         <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/30 via-transparent to-orange-200/20"></div>
         <div className="absolute inset-0 bg-gradient-to-bl from-orange-300/20 via-transparent to-purple-300/25"></div>
         <div className="absolute inset-0 bg-gradient-to-tl from-pink-200/15 via-transparent to-violet-200/20"></div>
