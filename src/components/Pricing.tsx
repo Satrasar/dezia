@@ -259,12 +259,12 @@ const Pricing = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {t.plans.map((plan, index) => {
             let planPrice = 0;
-            let planCredits = visualizationCount;
+            let planCredits = 50; // Fixed credits for Starter when disabled
             let isDisabled = false;
             
             if (index === 0) { // Starter
               planPrice = starterPrice;
-              planCredits = Math.round(visualizationCount * 0.6);
+              planCredits = 50; // Always show 50 credits for Starter
               isDisabled = visualizationCount < 50; // Disable if less than 50
             } else if (index === 1) { // Pro
               planPrice = proPrice;
